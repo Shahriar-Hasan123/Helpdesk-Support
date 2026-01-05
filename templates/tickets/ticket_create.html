@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Create Ticket{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Create Ticket</h3>
+  <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Back</a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <div class="fw-semibold mb-2">Please fix the errors below:</div>
+            <ul class="mb-0">
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.department.id_for_label }}">Department</label>
+            {{ form.department }}
+            {% if form.department.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.department.errors|striptags }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.subject.id_for_label }}">Subject</label>
+            {{ form.subject }}
+            {% if form.subject.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.subject.errors|striptags }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.description.errors|striptags }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.attachments.id_for_label }}">Attachments</label>
+            <input type="file" name="attachments" id="id_attachments" class="form-control" multiple accept=".pdf,image/*">
+            {% if attachments_error %}
+              <div class="invalid-feedback d-block">{{ attachments_error }}</div>
+            {% elif form.attachments.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.attachments.errors|striptags }}
+              </div>
+            {% endif %}
+            <div class="form-text">You can select multiple files (PDF/images).</div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Submit Ticket</button>
+            <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Cancel</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

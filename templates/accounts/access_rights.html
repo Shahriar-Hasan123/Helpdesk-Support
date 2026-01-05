@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Access Rights{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h3 class="mb-0">Access Rights</h3>
+    <div class="text-muted">Select a user and set their role (only one role is allowed).</div>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Back</a>
+</div>
+
+<div class="row g-3">
+  <!-- Step 1: Choose user -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h5 class="mb-3">Step 1: Select User</h5>
+
+        <form method="get">
+          <label class="form-label">User</label>
+          <select class="form-select" name="user_id" onchange="this.form.submit()">
+            <option value="">-- Select a user --</option>
+            {% for u in users %}
+              <option value="{{ u.id }}" {% if selected_user and selected_user.id == u.id %}selected{% endif %}>
+                {{ u.username }}
+              </option>
+            {% endfor %}
+          </select>
+          <div class="form-text">When you choose a user, their current role will appear on the right.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Show current role + set new role -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h5 class="mb-3">Step 2: Set Role</h5>
+
+        {% if selected_user %}
+          <div class="mb-3">
+            <div class="text-muted mb-1">Selected user</div>
+            <div class="fw-semibold">{{ selected_user.username }}</div>
+          </div>
+
+          <div class="mb-3">
+            <div class="text-muted mb-1">Current role</div>
+            {% if selected_user_roles %}
+              {% for r in selected_user_roles %}
+                <span class="badge text-bg-info">{{ r }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="badge text-bg-secondary">No role assigned</span>
+            {% endif %}
+          </div>
+
+          <form method="post" class="row g-3">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+
+            <div class="col-md-8">
+              <label class="form-label">New role</label>
+              <select class="form-select" name="role_name" required>
+                {% for r in roles %}
+                  <option value="{{ r.name }}">{{ r.name }}</option>
+                {% endfor %}
+              </select>
+              <div class="form-text">
+                This will remove other roles automatically (one user = one role).
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+              <button class="btn btn-primary w-100" type="submit">Save Role</button>
+            </div>
+          </form>
+
+          <hr class="my-4">
+          <div class="alert alert-warning mb-0">
+            <strong>Note:</strong> Only Managers can access this page. Students and agents cannot change roles.
+          </div>
+
+        {% else %}
+          <div class="alert alert-info mb-0">
+            Please select a user from the left panel to view and change their role.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

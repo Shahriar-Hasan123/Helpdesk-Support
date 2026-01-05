@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}My Tickets{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h3 class="mb-0">My Tickets</h3>
+    <div class="text-muted">Track your submitted support requests and their status.</div>
+  </div>
+  <a class="btn btn-primary" href="{% url 'ticket_create' %}">+ Create Ticket</a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Ticket ID</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Updated</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td class="fw-semibold">{{ t.ticket_id }}</td>
+            <td>{{ t.subject }}</td>
+
+            <td>
+              {% if t.status == "NEW" %}
+                <span class="badge text-bg-secondary">New</span>
+              {% elif t.status == "IN_PROGRESS" %}
+                <span class="badge text-bg-primary">In Progress</span>
+              {% elif t.status == "WAITING_STUDENT" %}
+                <span class="badge text-bg-warning">Waiting for Student</span>
+              {% elif t.status == "RESOLVED" %}
+                <span class="badge text-bg-success">Resolved</span>
+              {% elif t.status == "CLOSED" %}
+                <span class="badge text-bg-dark">Closed</span>
+              {% else %}
+                <span class="badge text-bg-secondary">{{ t.get_status_display }}</span>
+              {% endif %}
+            </td>
+
+            <td>{{ t.created_at|date:"M d, Y" }}</td>
+            <td>{{ t.updated_at|date:"M d, Y" }}</td>
+
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'ticket_detail' t.pk %}">
+                View
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">
+              No tickets yet. Click <strong>Create Ticket</strong> to submit a request.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

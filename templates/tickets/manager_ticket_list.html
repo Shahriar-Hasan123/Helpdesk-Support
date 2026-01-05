@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}All Tickets{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h3 class="mb-0">All Tickets</h3>
+    <div class="text-muted">Manager dashboard – view, assign, and manage tickets.</div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-dark" href="{% url 'access_rights' %}">
+      Access Rights
+    </a>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Ticket ID</th>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Assigned Agent</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td class="fw-semibold">{{ t.ticket_id }}</td>
+            <td>{{ t.student.username }}</td>
+            <td>{{ t.subject }}</td>
+            <td>{{ t.department }}</td>
+
+            <td>
+              {% if t.status == "NEW" %}
+                <span class="badge text-bg-secondary">New</span>
+              {% elif t.status == "IN_PROGRESS" %}
+                <span class="badge text-bg-primary">In Progress</span>
+              {% elif t.status == "WAITING_STUDENT" %}
+                <span class="badge text-bg-warning">Waiting</span>
+              {% elif t.status == "RESOLVED" %}
+                <span class="badge text-bg-success">Resolved</span>
+              {% elif t.status == "CLOSED" %}
+                <span class="badge text-bg-dark">Closed</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {{ t.assigned_agent.username|default:"—" }}
+            </td>
+
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'ticket_detail' t.pk %}">
+                View
+              </a>
+              <a class="btn btn-sm btn-outline-success" href="{% url 'manager_ticket_assign' t.pk %}">
+                Assign
+              </a>
+              <a class="btn btn-sm btn-outline-warning" href="{% url 'manager_ticket_duplicate' t.pk %}">
+                Duplicate
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">
+              No tickets found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
